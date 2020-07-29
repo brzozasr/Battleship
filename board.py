@@ -25,7 +25,7 @@ class Board:
         for i in range(self.size):
             board_row = []
             for j in range(self.size):
-                cell = Cell(i, j, "0")  # TODO improve content
+                cell = Cell(i, j, "0")
                 board_row.append(cell)
             self.board.append(board_row)
 
@@ -37,27 +37,100 @@ class Board:
 
     def add_ship(self, x, y, length, location):
         if Board.is_out_of_range(x, y, length, location):
-            for line in self.board:
-                for cell in line:  # TODO check out of range and neighbors
-                    if location == "H":
-                        if cell.poz_x == x and y <= cell.poz_y < y + length:
-                            for i in range(length):
-                                cell.object_ship = ship.Ship(x, y, length, location)
-                    if location == "V":
-                        if x <= cell.poz_x < x + length and cell.poz_y == y:
-                            for i in range(length):
-                                cell.object_ship = ship.Ship(x, y, length, location)
+            if not self.is_intersect(x, y, length, location):
+                for line in self.board:
+                    for cell in line:
+                        if location == "H":
+                            if cell.poz_x == x and y <= cell.poz_y < y + length:
+                                for i in range(length):
+                                    cell.object_ship = ship.Ship(x, y, length, location)
+                        if location == "V":
+                            if x <= cell.poz_x < x + length and cell.poz_y == y:
+                                for i in range(length):
+                                    cell.object_ship = ship.Ship(x, y, length, location)
+            else:
+                print('\033[31m', "Ships are too close!", '\033[0m')
         else:
-            print('\033[31m', f"Invalid input! The ship is out of the board!", '\033[0m')
+            print('\033[31m', "Invalid input! The ship is out of the board!", '\033[0m')
 
     def is_intersect(self, x, y, length, location):
-        pass
+        intersect_set = set()
+        if location == "H":
+            counter_h = 1
+            for _ in range(length):
+                for i in range(3):
+                    poz = (x, (y - 1) + i)
+                    if (poz[0] >= 0 and poz[1] >= 0) and (poz[0] < Board.size and poz[1] < Board.size):
+                        intersect_set.add(poz)
+                for j in range(3):
+                    poz = (x - 1, (y - 1) + j)
+                    if (poz[0] >= 0 and poz[1] >= 0) and (poz[0] < Board.size and poz[1] < Board.size):
+                        intersect_set.add(poz)
+                for k in range(3):
+                    poz = (x + 1, (y - 1) + k)
+                    if (poz[0] >= 0 and poz[1] >= 0) and (poz[0] < Board.size and poz[1] < Board.size):
+                        intersect_set.add(poz)
+                y += counter_h
+        if location == "V":
+            counter_v = 1
+            for _ in range(length):
+                for i in range(3):
+                    poz = ((x - 1) + i, y)
+                    if (poz[0] >= 0 and poz[1] >= 0) and (poz[0] < Board.size and poz[1] < Board.size):
+                        intersect_set.add(poz)
+                for j in range(3):
+                    poz = ((x - 1) + j, y - 1)
+                    if (poz[0] >= 0 and poz[1] >= 0) and (poz[0] < Board.size and poz[1] < Board.size):
+                        intersect_set.add(poz)
+                for k in range(3):
+                    poz = ((x - 1) + k, y + 1)
+                    if (poz[0] >= 0 and poz[1] >= 0) and (poz[0] < Board.size and poz[1] < Board.size):
+                        intersect_set.add(poz)
+                x += counter_v
+        for line in self.board:
+            for cell in line:
+                if (cell.poz_x, cell.poz_y) in intersect_set and cell.object_ship is not None:
+                    return True
+            return False
 
     def __str__(self):
+        letter_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+        margin = " " * 2
+        line = margin + "+---" * Board.size
+        top_no = f"{margin}"
+        for i in range(1, Board.size + 1):
+            top_no += f"  \033[1;35m{i}\033[0m "
         txt = ""
+        txt += top_no + "\n"
+        count_letter = 0
         for row in self.board:
+            counter = 0
+            txt += line + "+\n"
             for cell in row:
-                txt += f"x: {cell.poz_x}, y: {cell.poz_y} - {cell.content} {cell.object_ship}\n"
+                if counter == 0:
+                    letter = f"\033[1;33m{letter_list[count_letter]}\033[0m" + " "
+                    count_letter += 1
+                else:
+                    letter = ""
+                if cell.content == "0":
+                    cell_content = f"\033[1;34m{cell.content}\033[0m"
+                elif cell.content == "M":
+                    cell_content = f"\033[1;32m{cell.content}\033[0m"
+                elif cell.content == "H":
+                    cell_content = f"\033[1;36m{cell.content}\033[0m"
+                elif cell.content == "S":
+                    cell_content = f"\033[1;31m{cell.content}\033[0m"
+                else:
+                    cell_content = cell.content
+
+                txt += f"{letter}| {cell_content} "
+                if counter == Board.size - 1:
+                    txt += "|\n"
+                counter += 1
+        txt += f"{line}+\n"
+        legend = f"\033[1;34m0: an undiscovered tile\033[0m, \033[1;32mM: a missed shot\033[0m, \n" \
+                 f"\033[1;36mH: a hit ship part\033[0m, \033[1;31mS: a sunk ship part\033[0m."
+        txt += legend
         return txt
 
     @classmethod
@@ -77,9 +150,8 @@ class Board:
 
 
 Board.size = 10
-c = Board()
-c.init_board()
-
-c.add_ship(7, 5, 4, "V")
-# print(c.is_out_of_range(4, 3, 4, "V"))
-# print(c)
+p1 = Board()
+p1.init_board()
+p2 = Board()
+p2.init_board()
+print(p1)
