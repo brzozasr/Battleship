@@ -20,6 +20,19 @@ class Board:
     def __init__(self):
         self.size = Board.size
         self.board = []
+        self._message = None
+
+    @property
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, value):
+        self._message = value
+
+    def print_message(self):
+        if self.message is not None:
+            print(f"\033[31m{self.message}\033[0m")
 
     def init_board(self):
         for i in range(self.size):
@@ -49,9 +62,11 @@ class Board:
                                 for i in range(length):
                                     cell.object_ship = ship.Ship(x, y, length, location)
             else:
-                print('\033[31m', "Ships are too close!", '\033[0m')
+                self._message = "Ships are too close!"
+                # print('\033[31m', "Ships are too close!", '\033[0m')
         else:
-            print('\033[31m', "Invalid input! The ship is out of the board!", '\033[0m')
+            self._message = "Invalid input! The ship is out of the board!"
+            # print('\033[31m', "Invalid input! The ship is out of the board!", '\033[0m')
 
     def is_intersect(self, x, y, length, location):
         intersect_set = set()
@@ -92,6 +107,37 @@ class Board:
                 if (cell.poz_x, cell.poz_y) in intersect_set and cell.object_ship is not None:
                     return True
             return False
+
+    def ship_input_board_print(self):
+        letter_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+        margin = " " * 2
+        line = margin + "+---" * Board.size
+        top_no = f"{margin}"
+        for i in range(1, Board.size + 1):
+            top_no += f"  \033[1;35m{i}\033[0m "
+        txt = ""
+        txt += top_no + "\n"
+        count_letter = 0
+        for row in self.board:
+            counter = 0
+            txt += line + "+\n"
+            for cell in row:
+                if counter == 0:
+                    letter = f"\033[1;33m{letter_list[count_letter]}\033[0m" + " "
+                    count_letter += 1
+                else:
+                    letter = ""
+                if cell.content == "0" and cell.object_ship is None:
+                    cell_content = f"\033[1;36m.\033[0m"
+                else:
+                    cell_content = f"\033[1;31mX\033[0m"
+
+                txt += f"{letter}| {cell_content} "
+                if counter == Board.size - 1:
+                    txt += "|\n"
+                counter += 1
+        txt += f"{line}+"
+        return txt
 
     def __str__(self):
         letter_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
@@ -148,10 +194,27 @@ class Board:
         else:
             return False
 
+    def is_coordinates_correct(self, coord):
+        letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+        numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        coordinates = []
+        for i in range(Board.size):
+            for j in range(Board.size):
+                coordinates.append(letters[i] + numbers[j])
+        if coord in coordinates:
+            return True
+        else:
+            self._message = "Invalid coordinates!"
+            return False
 
-Board.size = 10
-p1 = Board()
-p1.init_board()
-p2 = Board()
-p2.init_board()
-print(p1)
+
+if __name__ == '__main__':
+    Board.size = 10
+    p1 = Board()
+    p1.init_board()
+    p2 = Board()
+    p2.init_board()
+    print(p1.ship_input_board_print())
+    # p1.message = "TEST!!!"
+    # print(p1.message)
+    print(Board.is_coordinates_correct())
