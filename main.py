@@ -1,6 +1,6 @@
 import board
 import tools
-
+import time
 
 # 0 - the beginning of the game,
 # 1 - Multiplayer,
@@ -48,52 +48,92 @@ def main():
                 continue
         elif game_sts == 1:
             tools.clear_console()
-            if player == "P1" and tools.is_ship_available(fleet_p1)[0]:
-                print(p1.ship_input_board_print())
-                p1.print_message()
-                p1.message = None
-                ship = tools.is_ship_available(fleet_p1)
-                print(f"\033[36mPlayer {player[1]} placing ships phase.\033[0m")
-            else:
-                set_player("P2")
-                print(p2.ship_input_board_print())
-                p2.print_message()
-                p2.message = None
-                ship = tools.is_ship_available(fleet_p2)
-                print(f"\033[34mPlayer {player[1]} placing ships phase.\033[0m")
-            coord = input(f"Write coordinates of the {ship[1]} (size: {ship[2]}) (e.g. A1, D5): ")
-            coord = coord.upper()
-            if coord == "EXIT":
-                break
-            else:
-                if player == "P1":
-                    if p1.is_coordinates_correct(coord):
-                        coord_xy = tools.get_coordinates(coord)
-                        coord_xy.append(ship[2])
-                        if ship[2] > 1:
-                            position = input(f"Set position of the {ship[1]}, \"H\" - horizontal, \"V\" - vertical: ")
-                            position = position.upper()
-                        else:
-                            position = "H"
-                        if tools.is_position_correct(position):
-                            coord_xy.append(position)
-                            is_added = p1.add_ship(*coord_xy)
-                            if is_added:
-                                fleet_p1[(ship[1], ship[2])] -= 1
+            if tools.is_ship_available(fleet_p1)[0] or tools.is_ship_available(fleet_p2)[0]:
+                if player == "P1" and tools.is_ship_available(fleet_p1)[0]:
+                    print(p1.ship_input_board_print())
+                    p1.print_message()
+                    p1.message = None
+                    ship = tools.is_ship_available(fleet_p1)
+                    print(f"\033[36mPlayer {player[1]} placing ships phase.\033[0m")
                 else:
-                    if p2.is_coordinates_correct(coord):
-                        coord_xy = tools.get_coordinates(coord)
-                        coord_xy.append(ship[2])
-                        if ship[2] > 1:
-                            position = input(f"Set position of the {ship[1]}, \"H\" - horizontal, \"V\" - vertical: ")
-                            position = position.upper()
-                        else:
-                            position = "H"
-                        if tools.is_position_correct(position):
-                            coord_xy.append(position)
-                            is_added = p2.add_ship(*coord_xy)
-                            if is_added:
-                                fleet_p2[(ship[1], ship[2])] -= 1
+                    set_player("P2")
+                    print(p2.ship_input_board_print())
+                    p2.print_message()
+                    p2.message = None
+                    ship = tools.is_ship_available(fleet_p2)
+                    print(f"\033[34mPlayer {player[1]} placing ships phase.\033[0m")
+                coord = input(f"Write coordinates of the {ship[1]} (size: {ship[2]}) (e.g. A1, D5): ")
+                coord = coord.upper()
+                if coord == "EXIT":
+                    break
+                else:
+                    if player == "P1":
+                        if p1.is_coordinates_correct(coord):
+                            coord_xy = tools.get_coordinates(coord)
+                            coord_xy.append(ship[2])
+                            if ship[2] > 1:
+                                position = input(
+                                    f"Set position of the {ship[1]}, \"H\" - horizontal, \"V\" - vertical: ")
+                                position = position.upper()
+                            else:
+                                position = "H"
+                            if tools.is_position_correct(position):
+                                coord_xy.append(position)
+                                is_added = p1.add_ship(*coord_xy)
+                                if is_added:
+                                    fleet_p1[(ship[1], ship[2])] -= 1
+                    else:
+                        if p2.is_coordinates_correct(coord):
+                            coord_xy = tools.get_coordinates(coord)
+                            coord_xy.append(ship[2])
+                            if ship[2] > 1:
+                                position = input(
+                                    f"Set position of the {ship[1]}, \"H\" - horizontal, \"V\" - vertical: ")
+                                position = position.upper()
+                            else:
+                                position = "H"
+                            if tools.is_position_correct(position):
+                                coord_xy.append(position)
+                                is_added = p2.add_ship(*coord_xy)
+                                if is_added:
+                                    fleet_p2[(ship[1], ship[2])] -= 1
+                                    if not tools.is_ship_available(fleet_p2)[0]:
+                                        set_player("P1")
+            else:
+                # tools.clear_console()
+                if player == "P1":
+                    print(p2)
+                    print(f"\033[36mPlayer {player[1]}\'s turn.\033[0m")
+                else:
+                    print(p1)
+                    print(f"\033[34mPlayer {player[1]}\'s turn.\033[0m")
+                shot = input(f"Player {player[1]} shot: ")
+                shot = shot.upper()
+                if shot == "EXIT":
+                    break
+                else:
+                    if player == "P1":
+                        if p2.is_coordinates_correct(shot):
+                            coord_xy = tools.get_coordinates(shot)
+                            is_shot = p2.shot(*coord_xy)
+                            # tools.clear_console()
+                            print(p2)
+                            p2.print_message()
+                            p2.message = None
+                            if is_shot:
+                                set_player("P2")
+                            time.sleep(3)
+                    elif player == "P2":
+                        if p1.is_coordinates_correct(shot):
+                            coord_xy = tools.get_coordinates(shot)
+                            is_shot = p1.shot(*coord_xy)
+                            # tools.clear_console()
+                            print(p1)
+                            p1.print_message()
+                            p1.message = None
+                            if is_shot:
+                                set_player("P1")
+                            time.sleep(3)
 
         elif game_sts == 2:
             pass

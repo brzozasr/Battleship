@@ -31,8 +31,8 @@ class Board:
         self._message = value
 
     def print_message(self):
-        if self.message is not None:
-            print(f"\033[31m{self.message}\033[0m")
+        if self._message is not None:
+            print(f"\033[31m{self._message}\033[0m")
 
     def init_board(self):
         for i in range(self.size):
@@ -181,6 +181,63 @@ class Board:
         txt += legend
         return txt
 
+    def is_coordinates_correct(self, coord):
+        letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+        numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        coordinates = []
+        for i in range(Board.size):
+            for j in range(Board.size):
+                coordinates.append(letters[i] + numbers[j])
+        if coord in coordinates:
+            return True
+        else:
+            self._message = "Invalid coordinates!"
+            return False
+
+    def shot(self, x, y):
+        if self.board[x][y].content == "M" or self.board[x][y].content == "H" or \
+                self.board[x][y].content == "S":
+            self._message = "The shot was already here!"
+            return False
+        elif self.board[x][y].content == "0" and self.board[x][y].object_ship is None:
+            self.board[x][y].content = "M"
+            self._message = "You've missed!"
+            return True
+        elif self.board[x][y].content == "0" and self.board[x][y].object_ship is not None:
+            if self.board[x][y].object_ship.length == 1:
+                self.board[x][y].content = "S"
+                self._message = "You've sunk a ship!"
+                return True
+            else:
+                if self.board[x][y].object_ship.location == "H":
+                    self.board[x][y].content = "H"
+                    sx = self.board[x][y].object_ship.start_poz_x
+                    sy = self.board[x][y].object_ship.start_poz_y
+                    tmp_ship = [self.board[sx][i].content for i in range(sy, self.board[x][y].object_ship.length)]
+                    print(tmp_ship, "- tmp_ship")
+                    if "0" not in tmp_ship:
+                        for i in range(sy, self.board[x][y].object_ship.length):
+                            self.board[sx][i].content = "S"
+                            print(sx, i, "- sx, i")
+                        self._message = "You've sunk a ship!"
+                    else:
+                        self._message = "You've hit a ship!"
+                    return True
+                elif self.board[x][y].object_ship.location == "V":
+                    self.board[x][y].content = "H"
+                    sx = self.board[x][y].object_ship.start_poz_x
+                    sy = self.board[x][y].object_ship.start_poz_y
+                    tmp_ship = [self.board[i][sy].content for i in range(sx, self.board[x][y].object_ship.length)]
+                    print(tmp_ship, "- tmp_ship")
+                    if "0" not in tmp_ship:
+                        for i in range(sx, self.board[x][y].object_ship.length):
+                            self.board[i][sy].content = "S"
+                            print(i, sy, "- i, sy")
+                        self._message = "You've sunk a ship!"
+                    else:
+                        self._message = "You've hit a ship!"
+                    return True
+
     @classmethod
     def is_out_of_range(cls, x, y, length, location):
         if location == "H":
@@ -196,19 +253,6 @@ class Board:
         else:
             return False
 
-    def is_coordinates_correct(self, coord):
-        letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
-        numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-        coordinates = []
-        for i in range(Board.size):
-            for j in range(Board.size):
-                coordinates.append(letters[i] + numbers[j])
-        if coord in coordinates:
-            return True
-        else:
-            self._message = "Invalid coordinates!"
-            return False
-
 
 if __name__ == '__main__':
     Board.size = 10
@@ -216,5 +260,5 @@ if __name__ == '__main__':
     p1.init_board()
     p2 = Board()
     p2.init_board()
-    print(p1.ship_input_board_print())
-
+    # print(p1.ship_input_board_print())
+    p1.shot(0, 0)
