@@ -61,12 +61,13 @@ class Board:
                             if x <= cell.poz_x < x + length and cell.poz_y == y:
                                 for i in range(length):
                                     cell.object_ship = ship.Ship(x, y, length, location)
+                return True
             else:
                 self._message = "Ships are too close!"
-                # print('\033[31m', "Ships are too close!", '\033[0m')
+                return False
         else:
             self._message = "Invalid input! The ship is out of the board!"
-            # print('\033[31m', "Invalid input! The ship is out of the board!", '\033[0m')
+            return False
 
     def is_intersect(self, x, y, length, location):
         intersect_set = set()
@@ -106,7 +107,8 @@ class Board:
             for cell in line:
                 if (cell.poz_x, cell.poz_y) in intersect_set and cell.object_ship is not None:
                     return True
-            return False
+        intersect_set.clear()
+        return False
 
     def ship_input_board_print(self):
         letter_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
@@ -215,6 +217,4 @@ if __name__ == '__main__':
     p2 = Board()
     p2.init_board()
     print(p1.ship_input_board_print())
-    # p1.message = "TEST!!!"
-    # print(p1.message)
-    print(Board.is_coordinates_correct())
+
