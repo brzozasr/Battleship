@@ -213,10 +213,9 @@ class Board:
                     self.board[x][y].content = "H"
                     sx = self.board[x][y].object_ship.start_poz_x
                     sy = self.board[x][y].object_ship.start_poz_y
-                    tmp_ship = [self.board[sx][i].content for i in range(sy, self.board[x][y].object_ship.length)]
-                    print(tmp_ship, "- tmp_ship")
+                    tmp_ship = [self.board[sx][i].content for i in range(sy, sy + self.board[x][y].object_ship.length)]
                     if "0" not in tmp_ship:
-                        for i in range(sy, self.board[x][y].object_ship.length):
+                        for i in range(sy, sy + self.board[x][y].object_ship.length):
                             self.board[sx][i].content = "S"
                             print(sx, i, "- sx, i")
                         self._message = "You've sunk a ship!"
@@ -227,16 +226,22 @@ class Board:
                     self.board[x][y].content = "H"
                     sx = self.board[x][y].object_ship.start_poz_x
                     sy = self.board[x][y].object_ship.start_poz_y
-                    tmp_ship = [self.board[i][sy].content for i in range(sx, self.board[x][y].object_ship.length)]
-                    print(tmp_ship, "- tmp_ship")
+                    tmp_ship = [self.board[i][sy].content for i in range(sx, sx + self.board[x][y].object_ship.length)]
                     if "0" not in tmp_ship:
-                        for i in range(sx, self.board[x][y].object_ship.length):
+                        for i in range(sx, sx + self.board[x][y].object_ship.length):
                             self.board[i][sy].content = "S"
                             print(i, sy, "- i, sy")
                         self._message = "You've sunk a ship!"
                     else:
                         self._message = "You've hit a ship!"
                     return True
+
+    def has_lost(self):
+        for line in self.board:
+            for cell in line:
+                if cell.content == "0" and cell.object_ship is not None:
+                    return False
+        return True
 
     @classmethod
     def is_out_of_range(cls, x, y, length, location):

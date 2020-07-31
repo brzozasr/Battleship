@@ -100,7 +100,7 @@ def main():
                                     if not tools.is_ship_available(fleet_p2)[0]:
                                         set_player("P1")
             else:
-                # tools.clear_console()
+                tools.clear_console()
                 if player == "P1":
                     print(p2)
                     print(f"\033[36mPlayer {player[1]}\'s turn.\033[0m")
@@ -116,24 +116,36 @@ def main():
                         if p2.is_coordinates_correct(shot):
                             coord_xy = tools.get_coordinates(shot)
                             is_shot = p2.shot(*coord_xy)
-                            # tools.clear_console()
+                            tools.clear_console()
                             print(p2)
                             p2.print_message()
                             p2.message = None
                             if is_shot:
                                 set_player("P2")
-                            time.sleep(3)
+                            time.sleep(4)
+                            if p2.has_lost():
+                                p2.message = "Player 1 has won!!!"
+                                p2.print_message()
+                                p2.message = None
+                                set_game_sts(0)
+                                time.sleep(5)
                     elif player == "P2":
                         if p1.is_coordinates_correct(shot):
                             coord_xy = tools.get_coordinates(shot)
                             is_shot = p1.shot(*coord_xy)
-                            # tools.clear_console()
+                            tools.clear_console()
                             print(p1)
                             p1.print_message()
                             p1.message = None
                             if is_shot:
                                 set_player("P1")
-                            time.sleep(3)
+                            time.sleep(4)
+                            if p1.has_lost():
+                                p1.message = "Player 2 has won!!!"
+                                p1.print_message()
+                                p1.message = None
+                                set_game_sts(0)
+                                time.sleep(5)
 
         elif game_sts == 2:
             pass
