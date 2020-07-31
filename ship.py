@@ -4,3 +4,4 @@ class Ship:
         self.start_poz_y = start_poz_y
         self.length = length
         self.location = location
+
