@@ -326,11 +326,11 @@ class Board:
             poz = first_shoot.pop()
             if self.shot(*poz):
                 if self._message == "You've missed!":
-                    self._message = f"AI've missed ({letters[poz[0]]}, {numbers[poz[1]]})!"
+                    self._message = f"AI has missed ({letters[poz[0]]}{numbers[poz[1]]})!"
                 elif self._message == "You've sunk a ship!":
-                    self._message = f"AI've sunk a ship ({letters[poz[0]]}, {numbers[poz[1]]})!"
+                    self._message = f"AI has sunk a ship ({letters[poz[0]]}{numbers[poz[1]]})!"
                 elif self._message == "You've hit a ship!":
-                    self._message = f"AI've hit a ship ({letters[poz[0]]}, {numbers[poz[1]]})!"
+                    self._message = f"AI has hit a ship ({letters[poz[0]]}{numbers[poz[1]]})!"
         else:
             is_shooting = True
             while is_shooting:
@@ -339,11 +339,11 @@ class Board:
                 if self.board[x][y].content == "0" and (x, y) not in not_shoot_fields:
                     if self.shot(x, y):
                         if self._message == "You've missed!":
-                            self._message = f"AI've missed ({letters[x]}, {numbers[y]})!"
+                            self._message = f"AI has missed ({letters[x]}{numbers[y]})!"
                         elif self._message == "You've sunk a ship!":
-                            self._message = f"AI've sunk a ship ({letters[x]}, {numbers[y]})!"
+                            self._message = f"AI has sunk a ship ({letters[x]}{numbers[y]})!"
                         elif self._message == "You've hit a ship!":
-                            self._message = f"AI've hit a ship ({letters[x]}, {numbers[y]})!"
+                            self._message = f"AI has hit a ship ({letters[x]}{numbers[y]})!"
                         is_shooting = False
 
     def len_h(self):

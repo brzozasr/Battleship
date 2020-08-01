@@ -48,11 +48,6 @@ def reset_game():
     set_player("P1")
     set_fleet_p1()
     set_fleet_p2()
-    board.Board.size = 10
-    p1 = board.Board()
-    p1.init_board()
-    p2 = board.Board()
-    p2.init_board()
 
 
 def main():
@@ -64,6 +59,7 @@ def main():
     is_running = True
     while is_running:
         if game_sts == 0:
+            tools.clear_console()
             print("Available game modes: 1 - Multiplayer, 2 - Single player, or write \"exit\" to terminate.")
             mode = input("Select the game mode: ")
             mode = mode.upper()
@@ -155,8 +151,14 @@ def main():
                                 p2.message = "Player 1 has won!!!"
                                 p2.print_message()
                                 p2.message = None
-                                # set_game_sts(0)
+                                del p1
+                                del p2
                                 reset_game()
+                                board.Board.size = 10
+                                p1 = board.Board()
+                                p1.init_board()
+                                p2 = board.Board()
+                                p2.init_board()
                                 time.sleep(5)
                     elif player == "P2":
                         if p1.is_coordinates_correct(shot):
@@ -173,12 +175,18 @@ def main():
                                 p1.message = "Player 2 has won!!!"
                                 p1.print_message()
                                 p1.message = None
-                                # set_game_sts(0)
+                                del p1
+                                del p2
                                 reset_game()
+                                board.Board.size = 10
+                                p1 = board.Board()
+                                p1.init_board()
+                                p2 = board.Board()
+                                p2.init_board()
                                 time.sleep(5)
 
         elif game_sts == 2:
-            # tools.clear_console()
+            tools.clear_console()
             if tools.is_ship_available(fleet_p1)[0] or tools.is_ship_available(fleet_p2)[0]:
                 if player == "P1" and tools.is_ship_available(fleet_p1)[0]:
                     print(p1.ship_input_board_print())
@@ -212,7 +220,7 @@ def main():
                     p2.ai_place_ships(fleet_p2)
                     set_player("P1")
             else:
-                # tools.clear_console()
+                tools.clear_console()
                 if player == "P1":
                     print(p2)
                     print(f"\033[36mPlayer {player[1]}\'s turn.\033[0m")
@@ -236,9 +244,15 @@ def main():
                                     p2.message = "Player 1 has won!!!"
                                     p2.print_message()
                                     p2.message = None
-                                    # set_game_sts(0)
+                                    del p1
+                                    del p2
+                                    board.Board.size = 10
+                                    p1 = board.Board()
+                                    p1.init_board()
+                                    p2 = board.Board()
+                                    p2.init_board()
                                     reset_game()
-                                    time.sleep(5)
+                                    time.sleep(8)
                         else:
                             tools.clear_console()
                             print(p2)
@@ -257,9 +271,15 @@ def main():
                         p1.message = "Player AI has won!!!"
                         p1.print_message()
                         p1.message = None
-                        # set_game_sts(0)
+                        del p1
+                        del p2
+                        board.Board.size = 10
+                        p1 = board.Board()
+                        p1.init_board()
+                        p2 = board.Board()
+                        p2.init_board()
                         reset_game()
-                        time.sleep(5)
+                        time.sleep(8)
 
 
 main()
