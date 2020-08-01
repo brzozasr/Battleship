@@ -1,4 +1,6 @@
 import ship
+import random
+import tools
 
 
 class Cell:
@@ -217,7 +219,6 @@ class Board:
                     if "0" not in tmp_ship:
                         for i in range(sy, sy + self.board[x][y].object_ship.length):
                             self.board[sx][i].content = "S"
-                            print(sx, i, "- sx, i")
                         self._message = "You've sunk a ship!"
                     else:
                         self._message = "You've hit a ship!"
@@ -230,7 +231,6 @@ class Board:
                     if "0" not in tmp_ship:
                         for i in range(sx, sx + self.board[x][y].object_ship.length):
                             self.board[i][sy].content = "S"
-                            print(i, sy, "- i, sy")
                         self._message = "You've sunk a ship!"
                     else:
                         self._message = "You've hit a ship!"
@@ -242,6 +242,125 @@ class Board:
                 if cell.content == "0" and cell.object_ship is not None:
                     return False
         return True
+
+    def ai_place_ships(self, fleet):
+        is_placing = True
+        while is_placing:
+            x = random.randint(0, Board.size - 1)
+            y = random.randint(0, Board.size - 1)
+            loc = random.choice(["H", "V"])
+            ship_data = tools.is_ship_available(fleet)
+            if tools.is_ship_available(fleet)[0]:
+                if self.add_ship(x, y, ship_data[2], loc):
+                    fleet[(ship_data[1], ship_data[2])] -= 1
+            else:
+                is_placing = False
+
+    def ai_shot(self):
+        not_shoot_fields = set()
+        first_shoot = set()
+        for line in self.board:
+            for cell in line:
+                if cell.content == "S":
+                    for i in range(3):
+                        pos = (cell.poz_x, (cell.poz_y - 1) + i)
+                        if (pos[0] >= 0 and pos[1] >= 0) and (pos[0] < Board.size and pos[1] < Board.size):
+                            not_shoot_fields.add(pos)
+                    for j in range(3):
+                        pos = (cell.poz_x - 1, (cell.poz_y - 1) + j)
+                        if (pos[0] >= 0 and pos[1] >= 0) and (pos[0] < Board.size and pos[1] < Board.size):
+                            not_shoot_fields.add(pos)
+                    for k in range(3):
+                        pos = (cell.poz_x + 1, (cell.poz_y - 1) + k)
+                        if (pos[0] >= 0 and pos[1] >= 0) and (pos[0] < Board.size and pos[1] < Board.size):
+                            not_shoot_fields.add(pos)
+                elif cell.content == "H" and self.len_h() == 1:
+                    pos_top = (cell.poz_x - 1, cell.poz_y)
+                    if (pos_top[0] >= 0 and pos_top[1] >= 0) and (pos_top[0] < Board.size and pos_top[1] < Board.size):
+                        if self.board[pos_top[0]][pos_top[1]].content == "0":
+                            first_shoot.add(pos_top)
+                    pos_left = (cell.poz_x, cell.poz_y - 1)
+                    if (pos_left[0] >= 0 and pos_left[1] >= 0) and (
+                            pos_left[0] < Board.size and pos_left[1] < Board.size):
+                        if self.board[pos_left[0]][pos_left[1]].content == "0":
+                            first_shoot.add(pos_left)
+                    pos_right = (cell.poz_x, cell.poz_y + 1)
+                    if (pos_right[0] >= 0 and pos_right[1] >= 0) and (
+                            pos_right[0] < Board.size and pos_right[1] < Board.size):
+                        if self.board[pos_right[0]][pos_right[1]].content == "0":
+                            first_shoot.add(pos_right)
+                    pos_bottom = (cell.poz_x + 1, cell.poz_y)
+                    if (pos_bottom[0] >= 0 and pos_bottom[1] >= 0) and (
+                            pos_bottom[0] < Board.size and pos_bottom[1] < Board.size):
+                        if self.board[pos_bottom[0]][pos_bottom[1]].content == "0":
+                            first_shoot.add(pos_bottom)
+                elif cell.content == "H" and self.len_h() > 1:
+                    line_h_list = self.pos_h()
+                    if line_h_list[0][0] == line_h_list[1][0]:
+                        pos_left = (cell.poz_x, cell.poz_y - 1)
+                        if (pos_left[0] >= 0 and pos_left[1] >= 0) and (
+                                pos_left[0] < Board.size and pos_left[1] < Board.size):
+                            if self.board[pos_left[0]][pos_left[1]].content == "0":
+                                first_shoot.add(pos_left)
+                        pos_right = (cell.poz_x, cell.poz_y + 1)
+                        if (pos_right[0] >= 0 and pos_right[1] >= 0) and (
+                                pos_right[0] < Board.size and pos_right[1] < Board.size):
+                            if self.board[pos_right[0]][pos_right[1]].content == "0":
+                                first_shoot.add(pos_right)
+                    elif line_h_list[0][1] == line_h_list[1][1]:
+                        pos_top = (cell.poz_x - 1, cell.poz_y)
+                        if (pos_top[0] >= 0 and pos_top[1] >= 0) and (
+                                pos_top[0] < Board.size and pos_top[1] < Board.size):
+                            if self.board[pos_top[0]][pos_top[1]].content == "0":
+                                first_shoot.add(pos_top)
+                        pos_bottom = (cell.poz_x + 1, cell.poz_y)
+                        if (pos_bottom[0] >= 0 and pos_bottom[1] >= 0) and (
+                                pos_bottom[0] < Board.size and pos_bottom[1] < Board.size):
+                            if self.board[pos_bottom[0]][pos_bottom[1]].content == "0":
+                                first_shoot.add(pos_bottom)
+
+        letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+        numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+
+        if len(first_shoot) > 0:
+            poz = first_shoot.pop()
+            if self.shot(*poz):
+                if self._message == "You've missed!":
+                    self._message = f"AI has missed ({letters[poz[0]]}{numbers[poz[1]]})!"
+                elif self._message == "You've sunk a ship!":
+                    self._message = f"AI has sunk a ship ({letters[poz[0]]}{numbers[poz[1]]})!"
+                elif self._message == "You've hit a ship!":
+                    self._message = f"AI has hit a ship ({letters[poz[0]]}{numbers[poz[1]]})!"
+        else:
+            is_shooting = True
+            while is_shooting:
+                x = random.randint(0, Board.size - 1)
+                y = random.randint(0, Board.size - 1)
+                if self.board[x][y].content == "0" and (x, y) not in not_shoot_fields:
+                    if self.shot(x, y):
+                        if self._message == "You've missed!":
+                            self._message = f"AI has missed ({letters[x]}{numbers[y]})!"
+                        elif self._message == "You've sunk a ship!":
+                            self._message = f"AI has sunk a ship ({letters[x]}{numbers[y]})!"
+                        elif self._message == "You've hit a ship!":
+                            self._message = f"AI has hit a ship ({letters[x]}{numbers[y]})!"
+                        is_shooting = False
+
+    def len_h(self):
+        counter = 0
+        for line in self.board:
+            for cell in line:
+                if cell.content == "H":
+                    counter += 1
+        return counter
+
+    def pos_h(self):
+        pos_list = []
+        for line in self.board:
+            for cell in line:
+                if cell.content == "H":
+                    pos_list.append((cell.poz_x, cell.poz_y))
+        return pos_list
 
     @classmethod
     def is_out_of_range(cls, x, y, length, location):
@@ -266,4 +385,9 @@ if __name__ == '__main__':
     p2 = Board()
     p2.init_board()
     # print(p1.ship_input_board_print())
-    p1.shot(0, 0)
+    fleet_p1 = {("Battleship", 4): 1,
+                ("Destroyer", 3): 2,
+                ("Submarine", 2): 3,
+                ("Patrol Boat", 1): 5}
+    p1.ai_place_ships(fleet_p1)
+    print(p1.ship_input_board_print())
