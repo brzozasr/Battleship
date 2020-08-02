@@ -97,11 +97,11 @@ def main():
                             coord_xy.append(ship[2])
                             if ship[2] > 1:
                                 position = input(
-                                    f"Set position of the {ship[1]}, \"H\" - horizontal, \"V\" - vertical: ")
+                                    f"Set location of the {ship[1]}, \"H\" - horizontal, \"V\" - vertical: ")
                                 position = position.upper()
                             else:
                                 position = "H"
-                            if tools.is_position_correct(position):
+                            if p1.is_location_correct(position):
                                 coord_xy.append(position)
                                 is_added = p1.add_ship(*coord_xy)
                                 if is_added:
@@ -116,7 +116,7 @@ def main():
                                 position = position.upper()
                             else:
                                 position = "H"
-                            if tools.is_position_correct(position):
+                            if p2.is_location_correct(position):
                                 coord_xy.append(position)
                                 is_added = p2.add_ship(*coord_xy)
                                 if is_added:
@@ -209,7 +209,7 @@ def main():
                                     position = position.upper()
                                 else:
                                     position = "H"
-                                if tools.is_position_correct(position):
+                                if p1.is_location_correct(position):
                                     coord_xy.append(position)
                                     is_added = p1.add_ship(*coord_xy)
                                     if is_added:

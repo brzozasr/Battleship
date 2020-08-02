@@ -196,6 +196,14 @@ class Board:
             self._message = "Invalid coordinates!"
             return False
 
+    def is_location_correct(self, pos):
+        pos_list = ["H", "V"]
+        if pos in pos_list:
+            return True
+        else:
+            self._message = "You entered the wrong location, you can choose \"H\" or \"V\"!!!"
+            return False
+
     def shot(self, x, y):
         if self.board[x][y].content == "M" or self.board[x][y].content == "H" or \
                 self.board[x][y].content == "S":
