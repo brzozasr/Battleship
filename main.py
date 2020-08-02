@@ -59,7 +59,6 @@ def main():
     is_running = True
     while is_running:
         if game_sts == 0:
-            tools.clear_console()
             print("Available game modes: 1 - Multiplayer, 2 - Single player, or write \"exit\" to terminate.")
             mode = input("Select the game mode: ")
             mode = mode.upper()
@@ -68,6 +67,7 @@ def main():
             elif tools.is_mode_correct(mode):
                 set_game_sts(int(mode))
             else:
+                tools.clear_console()
                 print('\033[31m', "The game mod you have selected is invalid, please select 1 or 2!", '\033[0m')
                 continue
         elif game_sts == 1:
@@ -126,10 +126,12 @@ def main():
             else:
                 tools.clear_console()
                 if player == "P1":
-                    print(p2)
+                    # print(p2)
+                    tools.print_both_boards(p1, p2, game_sts)
                     print(f"\033[36mPlayer {player[1]}\'s turn.\033[0m")
                 else:
-                    print(p1)
+                    # print(p1)
+                    tools.print_both_boards(p1, p2, game_sts)
                     print(f"\033[34mPlayer {player[1]}\'s turn.\033[0m")
                 shot = input(f"Player {player[1]} shot: ")
                 shot = shot.upper()
@@ -141,7 +143,8 @@ def main():
                             coord_xy = tools.get_coordinates(shot)
                             is_shot = p2.shot(*coord_xy)
                             tools.clear_console()
-                            print(p2)
+                            # print(p2)
+                            tools.print_both_boards(p1, p2, game_sts)
                             p2.print_message()
                             p2.message = None
                             if is_shot:
@@ -165,7 +168,8 @@ def main():
                             coord_xy = tools.get_coordinates(shot)
                             is_shot = p1.shot(*coord_xy)
                             tools.clear_console()
-                            print(p1)
+                            # print(p1)
+                            tools.print_both_boards(p1, p2, game_sts)
                             p1.print_message()
                             p1.message = None
                             if is_shot:
@@ -222,7 +226,8 @@ def main():
             else:
                 tools.clear_console()
                 if player == "P1":
-                    print(p2)
+                    # print(p2)
+                    tools.print_both_boards(p1, p2, game_sts)
                     print(f"\033[36mPlayer {player[1]}\'s turn.\033[0m")
                     shot = input(f"Player {player[1]} shot: ")
                     shot = shot.upper()
@@ -234,7 +239,8 @@ def main():
                                 coord_xy = tools.get_coordinates(shot)
                                 is_shot = p2.shot(*coord_xy)
                                 tools.clear_console()
-                                print(p2)
+                                # print(p2)
+                                tools.print_both_boards(p1, p2, game_sts)
                                 p2.print_message()
                                 p2.message = None
                                 if is_shot:
@@ -255,13 +261,15 @@ def main():
                                     time.sleep(8)
                         else:
                             tools.clear_console()
-                            print(p2)
+                            # print(p2)
+                            tools.print_both_boards(p1, p2, game_sts)
                             p2.print_message()
                             p2.message = None
                 elif player == "AI":
                     p1.ai_shot()
                     tools.clear_console()
-                    print(p1)
+                    # print(p1)
+                    tools.print_both_boards(p1, p2, game_sts)
                     print(f"\033[34mPlayer AI\'s turn.\033[0m")
                     p1.print_message()
                     p1.message = None
