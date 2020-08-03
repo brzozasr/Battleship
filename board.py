@@ -18,11 +18,18 @@ class Cell:
 
 class Board:
     size = 10
+    logs = []
+    index = 1
 
-    def __init__(self):
+    def __init__(self, cls_name):
+        self.cls_name = cls_name
         self.size = Board.size
         self.board = []
         self._message = None
+
+    @classmethod  # TODO usunąć
+    def test(cls):
+        print(cls.logs)
 
     @property
     def message(self):
@@ -35,6 +42,13 @@ class Board:
     def print_message(self):
         if self._message is not None:
             print(f"\033[31m{self._message}\033[0m")
+            if len(Board.logs) >= 10:
+                Board.logs.pop(0)
+                Board.logs.append((f"{Board.index}.", self.cls_name.upper(), self._message))
+                Board.index += 1
+            else:
+                Board.logs.append((f"{Board.index}.", self.cls_name.upper(), self._message))
+                Board.index += 1
 
     def init_board(self):
         for i in range(self.size):
@@ -193,22 +207,33 @@ class Board:
         if coord in coordinates:
             return True
         else:
-            self._message = "Invalid coordinates!"
+            self._message = f"Invalid coordinates ({coord})!"
+            return False
+
+    def is_location_correct(self, pos):
+        pos_list = ["H", "V"]
+        if pos in pos_list:
+            return True
+        else:
+            self._message = "You entered the wrong location, you can choose \"H\" or \"V\"!!!"
             return False
 
     def shot(self, x, y):
+        letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+        numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        coord = f"({letters[x]}{numbers[y]})"
         if self.board[x][y].content == "M" or self.board[x][y].content == "H" or \
                 self.board[x][y].content == "S":
-            self._message = "The shot was already here!"
+            self._message = f"The shot {coord} was already here!"
             return False
         elif self.board[x][y].content == "0" and self.board[x][y].object_ship is None:
             self.board[x][y].content = "M"
-            self._message = "You've missed!"
+            self._message = f"You've missed {coord}!"
             return True
         elif self.board[x][y].content == "0" and self.board[x][y].object_ship is not None:
             if self.board[x][y].object_ship.length == 1:
                 self.board[x][y].content = "S"
-                self._message = "You've sunk a ship!"
+                self._message = f"You've sunk a ship {coord}!"
                 return True
             else:
                 if self.board[x][y].object_ship.location == "H":
@@ -219,9 +244,9 @@ class Board:
                     if "0" not in tmp_ship:
                         for i in range(sy, sy + self.board[x][y].object_ship.length):
                             self.board[sx][i].content = "S"
-                        self._message = "You've sunk a ship!"
+                        self._message = f"You've sunk a ship {coord}!"
                     else:
-                        self._message = "You've hit a ship!"
+                        self._message = f"You've hit a ship {coord}!"
                     return True
                 elif self.board[x][y].object_ship.location == "V":
                     self.board[x][y].content = "H"
@@ -231,9 +256,9 @@ class Board:
                     if "0" not in tmp_ship:
                         for i in range(sx, sx + self.board[x][y].object_ship.length):
                             self.board[i][sy].content = "S"
-                        self._message = "You've sunk a ship!"
+                        self._message = f"You've sunk a ship {coord}!"
                     else:
-                        self._message = "You've hit a ship!"
+                        self._message = f"You've hit a ship {coord}!"
                     return True
 
     def has_lost(self):
@@ -325,11 +350,11 @@ class Board:
         if len(first_shoot) > 0:
             poz = first_shoot.pop()
             if self.shot(*poz):
-                if self._message == "You've missed!":
+                if self._message.startswith("You've missed"):
                     self._message = f"AI has missed ({letters[poz[0]]}{numbers[poz[1]]})!"
-                elif self._message == "You've sunk a ship!":
+                elif self._message.startswith("You've sunk a ship"):
                     self._message = f"AI has sunk a ship ({letters[poz[0]]}{numbers[poz[1]]})!"
-                elif self._message == "You've hit a ship!":
+                elif self._message.startswith("You've hit a ship"):
                     self._message = f"AI has hit a ship ({letters[poz[0]]}{numbers[poz[1]]})!"
         else:
             is_shooting = True
@@ -338,11 +363,11 @@ class Board:
                 y = random.randint(0, Board.size - 1)
                 if self.board[x][y].content == "0" and (x, y) not in not_shoot_fields:
                     if self.shot(x, y):
-                        if self._message == "You've missed!":
+                        if self._message.startswith("You've missed"):
                             self._message = f"AI has missed ({letters[x]}{numbers[y]})!"
-                        elif self._message == "You've sunk a ship!":
+                        elif self._message.startswith("You've sunk a ship"):
                             self._message = f"AI has sunk a ship ({letters[x]}{numbers[y]})!"
-                        elif self._message == "You've hit a ship!":
+                        elif self._message.startswith("You've hit a ship"):
                             self._message = f"AI has hit a ship ({letters[x]}{numbers[y]})!"
                         is_shooting = False
 
@@ -380,9 +405,9 @@ class Board:
 
 if __name__ == '__main__':
     Board.size = 10
-    p1 = Board()
+    p1 = Board("P1")
     p1.init_board()
-    p2 = Board()
+    p2 = Board("P2")
     p2.init_board()
     # print(p1.ship_input_board_print())
     fleet_p1 = {("Battleship", 4): 1,
