@@ -119,7 +119,13 @@ def print_both_boards(player1, player2, game_status):
                         mess = f"{log[2][:25]}..."
                     else:
                         mess = log[2]
-                    log_print = f"\033[31m{log[0]:>3}\033[0m {player:<3} \033[32m{mess:<15}\033[0m"
+                    if log[2].find("missed") > -1:
+                        mess_color = f"\033[32m{mess}\033[0m"
+                    elif log[2].find("hit a ship") > -1:
+                        mess_color = f"\033[36m{mess}\033[0m"
+                    else:
+                        mess_color = f"\033[31m{mess}\033[0m"
+                    log_print = f"\033[31m{log[0]:>3}\033[0m {player:<3} {mess_color:<15}"
             if counter == board.Board.size - 1:
                 txt += f"{line_p1}|{margin_right}{line_p2}|{margin_log}{log_print}\n"
             counter += 1
@@ -140,8 +146,8 @@ def winner(file):
             margin_left = " " * 3
             for line in ascii_line:
                 line = line.strip(os.linesep)
-                print(f'{margin_left}\033[01;31;40m{line:^65}\033[0m')
-                time.sleep(0.4)
+                print(f'{margin_left}\033[01;31;40m{line:^70}\033[0m')
+                time.sleep(0.3)
     else:
         print('\033[31m', f"The file \"{data_line}\" doesn't exist!", '\033[0m')
 
@@ -153,3 +159,4 @@ if __name__ == '__main__':
     p2 = board.Board("P2")
     p2.init_board()
     print_both_boards(p1, p2, 1)
+    winner("ai.txt")

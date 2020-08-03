@@ -27,10 +27,6 @@ class Board:
         self.board = []
         self._message = None
 
-    @classmethod  # TODO usunąć
-    def test(cls):
-        print(cls.logs)
-
     @property
     def message(self):
         return self._message
