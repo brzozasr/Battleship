@@ -130,6 +130,7 @@ def main():
                                     if not tools.is_ship_available(fleet_p2)[0]:
                                         set_player("P1")
                                         board.Board.logs.clear()
+                                        board.Board.index = 1
             else:
                 tools.clear_console()
                 if player == "P1":
@@ -172,7 +173,7 @@ def main():
                                 p1.init_board()
                                 p2 = board.Board("P2")
                                 p2.init_board()
-                                time.sleep(2)
+                                time.sleep(4)
                                 tools.winner("p1.txt")
                     elif player == "P2":
                         if p1.is_coordinates_correct(shot):
@@ -199,7 +200,7 @@ def main():
                                 p1.init_board()
                                 p2 = board.Board("P2")
                                 p2.init_board()
-                                time.sleep(2)
+                                time.sleep(4)
                                 tools.winner("p2.txt")
 
         elif game_sts == 2:
@@ -238,6 +239,7 @@ def main():
                     p2.message = None
                     set_player("P1")
                     board.Board.logs.clear()
+                    board.Board.index = 1
             else:
                 tools.clear_console()
                 if player == "P1":
@@ -275,7 +277,7 @@ def main():
                                     p2 = board.Board("P2")
                                     p2.init_board()
                                     reset_game()
-                                    time.sleep(2)
+                                    time.sleep(4)
                                     tools.winner("p1.txt")
                         else:
                             tools.clear_console()
@@ -305,7 +307,7 @@ def main():
                         p2 = board.Board("P2")
                         p2.init_board()
                         reset_game()
-                        time.sleep(2)
+                        time.sleep(4)
                         tools.winner("ai.txt")
 
 
