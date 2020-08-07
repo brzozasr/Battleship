@@ -148,6 +148,7 @@ def winner(file):
                 line = line.strip(os.linesep)
                 print(f'{margin_left}\033[01;31;40m{line:^70}\033[0m')
                 time.sleep(0.3)
+        time.sleep(1.5)
     else:
         print('\033[31m', f"The file \"{data_line}\" doesn't exist!", '\033[0m')
 

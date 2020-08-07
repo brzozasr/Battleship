@@ -234,6 +234,8 @@ def main():
                                         fleet_p1[(ship[1], ship[2])] -= 1
                                         if not tools.is_ship_available(fleet_p1)[0]:
                                             set_player("AI")
+                                            board.Board.logs.clear()
+                                            board.Board.index = 1
                 else:
                     p2.ai_place_ships(fleet_p2)
                     p2.message = None
